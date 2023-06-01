@@ -4,7 +4,9 @@ var apiParameter = 'object?size=30&sort=random';
 var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
 
 
-
+$(document).ready(function() {
+    $(document).foundation();
+ })
 
 
 var start = function () {
@@ -87,6 +89,7 @@ var generate = function (imgURL, index) {
     var cell = document.createElement('div');
     var card = document.createElement('div');
     var img = document.createElement('img');
+    var favButton = document.createElement('button');
 
 
     cell.classList.add("cell");
@@ -98,13 +101,20 @@ var generate = function (imgURL, index) {
     img.setAttribute('width', '300px');
     img.setAttribute('id', index);
     img.setAttribute('src', imgURL);
+    favButton.classList.add('button');
+    favButton.innerHTML = '&#x2764;';
 
     container.appendChild(cell)
     cell.appendChild(card);
     card.appendChild(img);
+  
 
+    //card.appendChild(favButton)
+    // main.appendChild(container);
 
-}
+    //  var button = document.createElement('button');
+
+   }
 
 $('.generate-container').on('click', function(event) {
     //alert("working")
@@ -136,23 +146,5 @@ start();
 
 var random = document.querySelector('.random');
 random.addEventListener('click', start );
-
-
-// $('.btn').on('click', function () {
-//     var id = $(this).parent().attr('id');
-//     var task = $(this).siblings(".description").val();
-//     localStorage.setItem(id, task);
-// });
-// var favButton = document.createElement('img');
-// favButton.setAttribute('height', '94px');
-// favButton.setAttribute('width', '94px');
-// favButton.setAttribute('src', './assets/generic/icons8-heart-94.png');
-// favButton.setAttribute('title', 'plus icons');
-// card.appendChild(favButton);
-
-
-// onclick of image the modal needs to be generated.
-// the html structer and then the Links.
-
 
 
