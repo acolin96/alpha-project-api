@@ -4,7 +4,9 @@ var apiParameter = 'object?size=30&sort=random';
 var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
 
 
-
+$(document).ready(function() {
+    $(document).foundation();
+ })
 
 var start = function () {
     var container = document.querySelector('.grid-x')
@@ -109,3 +111,4 @@ start();
 
 var random = document.querySelector('.random');
 random.addEventListener('click', start )
+
