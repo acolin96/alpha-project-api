@@ -30,12 +30,13 @@ var start = function () {
                 imageInfo.harvUrl = data.records[index].url;
 
                 if (imageInfo.primaryUrl) {
-                    var imageDisplay = document.createElement('img');
-                    var test = document.createElement('p')
-                    imageDisplay.setAttribute('src', imageInfo.primaryUrl);
-                    test.textContent=index;
-                    main.appendChild(imageDisplay);
-                    imageDisplay.appendChild(test);
+                    // var imageDisplay = document.createElement('img');
+                    // var test = document.createElement('p')
+                    // imageDisplay.setAttribute('src', imageInfo.primaryUrl);
+                    // test.textContent=index;
+                    // main.appendChild(imageDisplay);
+                    // imageDisplay.appendChild(test);
+                    generate(imageInfo.primaryUrl);
                     Links(imageInfo);
                 }
             }
@@ -62,36 +63,66 @@ var wikipedia = async function (example) {
 
 
 var Links = async function(link){
-    // var imglinks = `${link.century} ${link.classification}`
-    // console.log(imglinks);
+    // // var imglinks = `${link.century} ${link.classification}`
+    // // console.log(imglinks);
 
-    if (link.artistName && link.artistName !='Unidentified Artist') {
-        var test = await wikipedia(link.artistName);
-        console.log(test);
-    }
-    if (link.classification) {
-        var test2 = await wikipedia(link.classification);
-        console.log(test2);
+    // if (link.artistName && link.artistName !='Unidentified Artist') {
+    //     var test = await wikipedia(link.artistName);
+    //     console.log(test);
+    // }
+    // if (link.classification) {
+    //     var test2 = await wikipedia(link.classification);
+    //     console.log(test2);
 
-    }
-    if (link.century) {
-        var test3 = await wikipedia(link.century);
-        console.log(test3);
-    }
+    // }
+    // if (link.century) {
+    //     var test3 = await wikipedia(link.century);
+    //     console.log(test3);
+    // }
 };
 
 
+var generate = function(imgURL) {
+    var container = document.createElement('div');
+    var grid = document.createElement('div');
+    var cell = document.createElement('div');
+    var card = document.createElement('div');
+    var img = document.createElement('img');
+
+    container.classList.add("grid-container");
+    grid.classList.add("grid-x", "grid-margin-x", "small-up-2", "medium-up-3");
+    cell.classList.add("cell");
+    card.classList.add("card");
+    img.setAttribute('src', imgURL);
+
+    container.appendChild(grid);
+    grid.appendChild(cell);
+    cell.appendChild(card);
+    card.appendChild(img);
+    main.appendChild(container);
+
+    var button = document.createElement('button');
+
+
+}
+
+    // < p > <button class="button" data-open="exampleModal1">Click me for a modal</button></p>
 
 
 
-
-
-
-
+// <div class="grid-container">
+//     <div class="grid-x grid-margin-x small-up-2 medium-up-3">
+//         <div class="cell">
+//             <div class="card">
+//                 <img src="assets/generic/ss2.jpg">
+//                     <div class="card-section">
+//                         <h4>This is a row of cards.</h4>
+//                         <p>This row of cards is embedded in an X-Y Block Grid.</p>
+//                     </div>
+//             </div>
+//         </div>
 
 
 
 
 start();
-
-
