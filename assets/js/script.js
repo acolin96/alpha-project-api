@@ -86,29 +86,34 @@ var generate = function (imgURL) {
     var cell = document.createElement('div');
     var card = document.createElement('div');
     var img = document.createElement('img');
+    var favButton = document.createElement('button');
 
     // container.classList.add("grid-container");
     // grid.classList.add("grid-x", "grid-margin-x", "small-up-2", "medium-up-3");
     cell.classList.add("cell");
     card.classList.add("card");
     img.setAttribute('src', imgURL);
+    favButton.classList.add('button');
+    favButton.innerHTML = '&#x2764;';
 
     // container.appendChild(grid);
     // grid.appendChild(cell);
     container.appendChild(cell)
     cell.appendChild(card);
     card.appendChild(img);
+    card.appendChild(favButton)
     // main.appendChild(container);
 
-    // var button = document.createElement('button');
+    //  var button = document.createElement('button');
 
+    
 
 }
-
-
-
+//  var randomButton = document.getElementById('randomButton');
+//   randomButton.addEventListener('click', function() {
+     
+//   });
 start();
-
-var random = document.querySelector('.random');
 random.addEventListener('click', start )
+
 
