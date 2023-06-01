@@ -8,6 +8,7 @@ $(document).ready(function() {
     $(document).foundation();
  })
 
+
 var start = function () {
     var container = document.querySelector('.grid-x')
     container.innerHTML="";
@@ -17,13 +18,10 @@ var start = function () {
             return response.json();
         })
         .then(function (data) {
-            // console.log(data);
+            console.log(data);
 
             for (let index = 0; index < data.records.length; index++) {
-                // console.log(data);
-
                 var imageInfo = {};
-
                 if (data.records[index].people) {
                     imageInfo.artistName = data.records[index].people[0].name;}
                 else {imageInfo.artistName = null;};
@@ -33,9 +31,10 @@ var start = function () {
                 imageInfo.primaryUrl = data.records[index].primaryimageurl;
                 imageInfo.harvUrl = data.records[index].url;
 
+
                 if (imageInfo.primaryUrl) {
-                    generate(imageInfo.primaryUrl);
-                    Links(imageInfo);
+                    localStorage.setItem(index, JSON.stringify(imageInfo));
+                    generate(imageInfo.primaryUrl, index);
                 }
             }
         })
@@ -59,61 +58,92 @@ var wikipedia = async function (example) {
 
 
 var Links = async function (link) {
-    // // var imglinks = `${link.century} ${link.classification}`
-    // // console.log(imglinks);
+    // var imglinks = {};
 
     // if (link.artistName && link.artistName !='Unidentified Artist') {
     //     var test = await wikipedia(link.artistName);
-    //     console.log(test);
+    //     imglinks.artistName=test;
+    //     // console.log(test);
     // }
     // if (link.classification) {
     //     var test2 = await wikipedia(link.classification);
-    //     console.log(test2);
+    //     imglinks.classification = test2;
+    //     // console.log(test2);
 
     // }
     // if (link.century) {
     //     var test3 = await wikipedia(link.century);
-    //     console.log(test3);
+    //     imglinks.century = test3;
+    //     // console.log(test3);
     // }
+
+    // return imglinks;
+
+
 };
 
 
-var generate = function (imgURL) {
+var generate = function (imgURL, index) {
 
-    // var container = document.createElement('div');
     var container = document.querySelector('.grid-x')
-    // var grid = document.createElement('div');
     var cell = document.createElement('div');
     var card = document.createElement('div');
     var img = document.createElement('img');
     var favButton = document.createElement('button');
 
-    // container.classList.add("grid-container");
-    // grid.classList.add("grid-x", "grid-margin-x", "small-up-2", "medium-up-3");
+
     cell.classList.add("cell");
     card.classList.add("card");
+
+    img.classList.add('modalClick');
+    img.setAttribute('object-fit', 'cover');
+    img.setAttribute('height', '200px');
+    img.setAttribute('width', '300px');
+    img.setAttribute('id', index);
     img.setAttribute('src', imgURL);
     favButton.classList.add('button');
     favButton.innerHTML = '&#x2764;';
 
-    // container.appendChild(grid);
-    // grid.appendChild(cell);
     container.appendChild(cell)
     cell.appendChild(card);
     card.appendChild(img);
-    card.appendChild(favButton)
+  
+
+    //card.appendChild(favButton)
     // main.appendChild(container);
 
     //  var button = document.createElement('button');
 
-    
+   }
 
-}
-//  var randomButton = document.getElementById('randomButton');
-//   randomButton.addEventListener('click', function() {
-     
-//   });
+$('.generate-container').on('click', function(event) {
+    //alert("working")
+    var imgTarget = $(event.target);
+    var imgID = event.target.id;
+    if(imgTarget.is("img")) {
+        modal(event, imgID);
+    }
+});
+
+var modal = function(event, id){
+    event.preventDefault();
+    //var id = $(this).attr('id');
+    console.log(id);
+
+
+    // var id = $(this).attr('id');
+    // console.log(id);
+
+     var info = localStorage.getItem(id);
+     console.log(info);
+
+};
+
+
+
 start();
+
+
 var random = document.querySelector('.random');
 random.addEventListener('click', start );
 
