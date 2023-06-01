@@ -114,6 +114,7 @@ var generate = function (imgURL) {
      
 //   });
 start();
-random.addEventListener('click', start )
+var random = document.querySelector('.random');
+random.addEventListener('click', start );
 
 
