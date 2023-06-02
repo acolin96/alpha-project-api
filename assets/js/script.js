@@ -1,7 +1,8 @@
-var main = document.querySelector('#image')
-var apiKey = '06109596-113b-4976-abd2-d879493e72e8';
-var apiParameter = 'object?size=10&sort=random';
-var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
+// var main = document.querySelector('#image')
+// var apiKey = '06109596-113b-4976-abd2-d879493e72e8';
+var userSelection = ' ';
+// var apiParameter = `${userSelection}?size=30&sort=random`;
+// var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
 
 
 $(document).ready(function () {
@@ -10,6 +11,11 @@ $(document).ready(function () {
 
 
 var start = function () {
+
+    var apiKey = '06109596-113b-4976-abd2-d879493e72e8';
+    var apiParameter = `${userSelection}?size=30&sort=random`;
+    var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
+
     var container = document.querySelector('.grid-x')
     container.innerHTML = "";
 
@@ -20,29 +26,35 @@ var start = function () {
         .then(function (data) {
             console.log(data);
 
-            for (let index = 0; index < data.records.length; index++) {
-                var imageInfo = {};
+            if (userSelection == 'object') {
+                for (let index = 0; index < data.records.length; index++) {
+                    var imageInfo = {};
 
-                if (data.records[index].people) {
-                    imageInfo.artistName = data.records[index].people[0].name;
+                    if (data.records[index].people) {
+                        imageInfo.artistName = data.records[index].people[0].name;
+                    }
+                    imageInfo.dated = data.records[index].dated;
+                    imageInfo.department = data.records[index].department;
+                    imageInfo.classification = data.records[index].classification;
+                    imageInfo.century = data.records[index].century;
+                    imageInfo.primaryUrl = data.records[index].primaryimageurl;
+                    imageInfo.harvUrl = data.records[index].url;
+                    imageInfo.title = data.records[index].title;
+                    imageInfo.technique = data.records[index].technique;
+                    imageInfo.culture = data.records[index].culture;
+                    if (imageInfo.primaryUrl) {
+                        localStorage.setItem(index, JSON.stringify(imageInfo));
+                        generate(imageInfo.primaryUrl, index);
+                    }
                 }
-
-                imageInfo.dated = data.records[index].dated;
-                imageInfo.department = data.records[index].department;
-                imageInfo.classification = data.records[index].classification;
-                imageInfo.century = data.records[index].century;
-                imageInfo.primaryUrl = data.records[index].primaryimageurl;
-                imageInfo.harvUrl = data.records[index].url;
-                imageInfo.title = data.records[index].title;
-                imageInfo.technique = data.records[index].technique;
-                imageInfo.culture = data.records[index].culture;
-
-
-
-                if (imageInfo.primaryUrl) {
+            }
+            else if (userSelection == 'image') {
+                for (let index = 0; index < data.records.length; index++) {
+                    var imageInfo = {};
+                    imageInfo.baseimageurl = data.records[index].baseimageurl;
                     localStorage.setItem(index, JSON.stringify(imageInfo));
-                    console.log(imageInfo);
-                    generate(imageInfo.primaryUrl, index);
+                    generate(imageInfo.baseimageurl, index)
+
                 }
             }
         })
@@ -60,7 +72,7 @@ var wikipedia = async function (example) {
         })
         .then(function (data) {
             url = data[3][0];
-            return(url);
+            return (url);
         })
 };
 
@@ -68,9 +80,9 @@ var wikipedia = async function (example) {
 var Links = async function (link) {
     var imglinks = {};
 
-    if (link.artistName || link.artistName !='Unidentified Artist') {
-        var test =  await wikipedia(link.artistName);
-        imglinks.artistName=test;
+    if (link.artistName || link.artistName != 'Unidentified Artist') {
+        var test = await wikipedia(link.artistName);
+        imglinks.artistName = test;
     }
     if (link.classification) {
         var test2 = await wikipedia(link.classification);
@@ -87,6 +99,8 @@ var Links = async function (link) {
 
 
 };
+
+
 
 
 var generate = function (imgURL, index) {
@@ -129,79 +143,133 @@ $('.generate-container').on('click', function (event) {
 var modal = async function (event, id) {
     event.preventDefault();
     var info = JSON.parse(localStorage.getItem(id));
-
-
-    var imglinks = {};
-    imglinks=await Links(info)
-    var modalInfo = document.createElement('div')
-    var ArtName=document.createElement('h2');
-    var Pcentury = document.createElement('p');
-    var Pclassificiation= document.createElement('p');
-    var Ptitle = document.createElement('p');
-    var Ptechnique = document.createElement('p');
-    var Pculture = document.createElement('p');
-    var Pdated = document.createElement('p');
-    var Pdepartment = document.createElement('p');
-
-
-    if(info.dated){
-        Pdated.textContent = info.dated;
-        modalInfo.appendChild(Pdated);
-    }
-
-
-
-
-
-
-    ArtName.textContent = `Artists Name:${info.artistName}`;
-    Pcentury.textContent = info.century;
-    Pclassificiation.textContent = info.classification;
-    Pdepartment.textContent=info.department;
-
-
-
-    Pdated.textContent = info.dated;
-    Ptitle.textContent = info.title;
-    Ptechnique.textContent = info.technique;
-    Pculture.textContent = info.culture;
-
-
-
-
-    modalInfo.appendChild(Pdepartment);
-    modalInfo.appendChild(Pdated);
-    modalInfo.appendChild(Ptitle);
-    modalInfo.appendChild(Ptechnique);
-    modalInfo.appendChild(Pculture);
-    modalInfo.appendChild(ArtName);
-    modalInfo.appendChild(Pcentury);
-    modalInfo.appendChild(Pclassificiation);
-    modalInfo.appendChild(Pdepartment);
-
-
-
-    var img = document.createElement('img');
-    img.setAttribute('id', id);
-    img.setAttribute('src', info.primaryUrl);
-
-
     var container = document.querySelector('.reveal')
-    container.innerHTML="";
-    container.appendChild(img);
-    container.appendChild(modalInfo);
+
+    if (info.artistName) {
+        var imglinks = {};
+        imglinks = await Links(info)
+        var modalInfo = document.createElement('div')
+        var ArtName = document.createElement('h2');
+        var Pcentury = document.createElement('p');
+        var Pclassificiation = document.createElement('p');
+        var Ptitle = document.createElement('p');
+        var Ptechnique = document.createElement('p');
+        var Pculture = document.createElement('p');
+        var Pdated = document.createElement('p');
+        var Pdepartment = document.createElement('p');
+
+        if (typeof info.artistName === 'undefined') {
+            ArtName.textContent = `Artists Name: Unidentifed Artist`;
+
+        } else {
+            ArtName.textContent = `Artists Name:${info.artistName}`;
+        }
 
 
-};
+
+        // if (info.dated) {
+        //     Pdated.textContent = info.dated;
+        //     modalInfo.appendChild(Pdated);
+        // };
+        // ArtName.textContent = `Artists Name:${info.artistName}`;
+        Pcentury.textContent = info.century;
+        Pclassificiation.textContent = info.classification;
+        Pdepartment.textContent = info.department;
+        Pdated.textContent = info.dated;
+        Ptitle.textContent = info.title;
+        Ptechnique.textContent = info.technique;
+        Pculture.textContent = info.culture;
+        modalInfo.appendChild(Ptitle);
+        modalInfo.appendChild(ArtName);
+        modalInfo.appendChild(Pcentury);
+        modalInfo.appendChild(Pclassificiation);
+        modalInfo.appendChild(Pdepartment);
+        modalInfo.appendChild(Ptechnique);
+        modalInfo.appendChild(Pculture);
+        modalInfo.appendChild(Pdated);
+
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute('src', info.primaryUrl);
+        container.innerHTML = "";
+        container.appendChild(img);
+        container.appendChild(modalInfo);
+    }
+    else if (info.baseimageurl) {
+        var img = document.createElement('img');
+        img.setAttribute('id', id);
+        img.setAttribute('src', info.baseimageurl);
+        container.innerHTML = "";
+        container.appendChild(img);
+
+    };
+
+    var favButton = document.createElement('button');
+    favButton.classList.add('button');
+    favButton.classList.add('favorite-button')
+    favButton.innerHTML = '&#x2764;';
+    container.appendChild(favButton);
+
+    $('.favorite-button').on('click', function () {
+        var count = JSON.parse(localStorage.getItem("count")) || 0;
+        count++;
+        localStorage.setItem("count", JSON.stringify(count));
+        localStorage.setItem(`fav${count}`, JSON.stringify(info));
+    });
+
+}
 
 
 
 
 
-start();
+
+// start();
 
 
 var random = document.querySelector('.random');
-random.addEventListener('click', start);
+random.addEventListener('click',
+    function () {
+        userSelection = "object";
+        start();
+    });
 
+
+var object = document.querySelector('.object');
+object.addEventListener('click',
+    function () {
+        userSelection = "object";
+        start();
+    });
+
+
+var images = document.querySelector('.images');
+images.addEventListener('click',
+    function () {
+        userSelection = "image";
+        start();
+    });
+
+var favorites = document.querySelector('.favorites')
+favorites.addEventListener('click',
+    function () {
+        var container = document.querySelector('.grid-x')
+        container.innerHTML = "";
+        let count = JSON.parse(localStorage.getItem('count'));
+        console.log(count);
+        for (let index = 1; index <= count; index++) {
+            var fav = `fav${index}`;
+            var info = JSON.parse(localStorage.getItem(fav));
+            console.log(index);
+
+            if (info) {
+                if (info.artistName) {
+                    generate(info.primaryUrl, fav);
+                }
+                else if (info.baseimageurl) {
+                    generate(info.baseimageurl, fav)
+                }
+            }
+        };
+    });
 
