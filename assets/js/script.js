@@ -1,15 +1,10 @@
-// var main = document.querySelector('#image')
-// var apiKey = '06109596-113b-4976-abd2-d879493e72e8';
 var userSelection = ' ';
-// var apiParameter = `${userSelection}?size=30&sort=random`;
-// var apiURL = `https://api.harvardartmuseums.org/${apiParameter}&apikey=${apiKey}`;
-
 
 $(document).ready(function () {
     $(document).foundation();
 });
 
-
+//Based on the user selection the Harvard API is called and the data is asigned to the object and stored to the localstorage.
 var start = function () {
 
     var apiKey = '06109596-113b-4976-abd2-d879493e72e8';
@@ -24,7 +19,6 @@ var start = function () {
             return response.json();
         })
         .then(function (data) {
-            console.log(data);
 
             if (userSelection == 'object') {
                 for (let index = 0; index < data.records.length; index++) {
@@ -61,7 +55,7 @@ var start = function () {
 };
 
 
-
+//Key words from the Harvard data are searched using the Wikipedia api. The top url is return. This is only done when a user cicks on the modal. If this was done for each image preemptively it would be very slow.
 var wikipedia = async function (example) {
     var wikiURL = `https://cors-anywhere.herokuapp.com/https://en.wikipedia.org/w/api.php?action=opensearch&search=${example}&limit=3&namespace=0&format=json`;
     var url;
@@ -76,45 +70,35 @@ var wikipedia = async function (example) {
         })
 };
 
-
+//We dont want to send null values to the Wiki api. There is not point in displaying the search results for null. This function filters out null values. Sends a legitimate word to Wiki,saves the data and returns it.
 var Links = async function (link) {
     var imglinks = {};
 
     if (link.artistName || link.artistName != 'Unidentified Artist') {
-        var test = await wikipedia(link.artistName);
-        imglinks.artistName = test;
+        var name = await wikipedia(link.artistName);
+        imglinks.artistName = name;
     }
     if (link.classification) {
-        var test2 = await wikipedia(link.classification);
-        imglinks.classification = test2;
-
-
+        var classif = await wikipedia(link.classification);
+        imglinks.classification = classif;
     }
     if (link.century) {
-        var test3 = await wikipedia(link.century);
-        imglinks.century = test3;
-
+        var cent = await wikipedia(link.century);
+        imglinks.century = cent;
     }
     return imglinks;
-
-
 };
 
-
-
-
+//This function generates the containers for the images. Creates, setsAttributes and appends them accordingly.
 var generate = function (imgURL, index) {
 
     var container = document.querySelector('.grid-x')
     var cell = document.createElement('div');
     var card = document.createElement('div');
     var img = document.createElement('img');
-
-
     cell.classList.add("cell");
     card.classList.add("card");
     card.setAttribute('data-open', "imgModal")
-
     img.classList.add('modalClick');
     img.setAttribute('object-fit', 'cover');
     img.setAttribute('height', '200px');
@@ -129,6 +113,7 @@ var generate = function (imgURL, index) {
 
 }
 
+//adds a click event to the container with the images. If a user clicks on the image it calls the modal function tp be displayed
 $('.generate-container').on('click', function (event) {
     var imgTarget = $(event.target);
     var imgID = event.target.id;
@@ -136,8 +121,6 @@ $('.generate-container').on('click', function (event) {
         modal(event, imgID);
     }
 });
-
-
 
 
 var modal = async function (event, id) {
@@ -149,7 +132,7 @@ var modal = async function (event, id) {
         var imglinks = {};
         imglinks = await Links(info)
         var modalInfo = document.createElement('div')
-        var ArtName = document.createElement('h2');
+        var ArtName = document.createElement('h3');
         var Pcentury = document.createElement('p');
         var Pclassificiation = document.createElement('p');
         var Ptitle = document.createElement('p');
@@ -157,6 +140,33 @@ var modal = async function (event, id) {
         var Pculture = document.createElement('p');
         var Pdated = document.createElement('p');
         var Pdepartment = document.createElement('p');
+        var wikiLinks = document.createElement('div');
+        var textWiki = document.createElement('h5');
+        var link1 = document.createElement('a');
+        var link2 = document.createElement('a');
+        var link3 = document.createElement('a');
+
+
+        textWiki.textContent = "Wikipedia Links"
+
+        if (imglinks.artistName) {
+            link1.setAttribute('href', imglinks.artistName);
+            link1.setAttribute('target', '_blank');
+            link1.textContent = info.artistName;
+        };
+        if (imglinks.century) {
+            link2.setAttribute('href', imglinks.century)
+            link2.setAttribute('target', '_blank');
+
+            link2.textContent = info.century;
+        };
+        if (imglinks.classification) {
+            link3.setAttribute('href', imglinks.classification)
+            link3.setAttribute('target', '_blank');
+
+            link3.textContent = info.classification;
+        };
+
 
         if (typeof info.artistName === 'undefined') {
             ArtName.textContent = `Artists Name: Unidentifed Artist`;
@@ -165,13 +175,6 @@ var modal = async function (event, id) {
             ArtName.textContent = `Artists Name:${info.artistName}`;
         }
 
-
-
-        // if (info.dated) {
-        //     Pdated.textContent = info.dated;
-        //     modalInfo.appendChild(Pdated);
-        // };
-        // ArtName.textContent = `Artists Name:${info.artistName}`;
         Pcentury.textContent = info.century;
         Pclassificiation.textContent = info.classification;
         Pdepartment.textContent = info.department;
@@ -179,6 +182,8 @@ var modal = async function (event, id) {
         Ptitle.textContent = info.title;
         Ptechnique.textContent = info.technique;
         Pculture.textContent = info.culture;
+
+
         modalInfo.appendChild(Ptitle);
         modalInfo.appendChild(ArtName);
         modalInfo.appendChild(Pcentury);
@@ -187,6 +192,11 @@ var modal = async function (event, id) {
         modalInfo.appendChild(Ptechnique);
         modalInfo.appendChild(Pculture);
         modalInfo.appendChild(Pdated);
+        modalInfo.appendChild(wikiLinks);
+        wikiLinks.appendChild(textWiki);
+        wikiLinks.appendChild(link1);
+        wikiLinks.appendChild(link2);
+        wikiLinks.appendChild(link3);
 
         var img = document.createElement('img');
         img.setAttribute('id', id);
@@ -194,6 +204,7 @@ var modal = async function (event, id) {
         container.innerHTML = "";
         container.appendChild(img);
         container.appendChild(modalInfo);
+
     }
     else if (info.baseimageurl) {
         var img = document.createElement('img');
@@ -201,7 +212,6 @@ var modal = async function (event, id) {
         img.setAttribute('src', info.baseimageurl);
         container.innerHTML = "";
         container.appendChild(img);
-
     };
 
     var favButton = document.createElement('button');
@@ -220,21 +230,7 @@ var modal = async function (event, id) {
 }
 
 
-
-
-
-
-// start();
-
-
-var random = document.querySelector('.random');
-random.addEventListener('click',
-    function () {
-        userSelection = "object";
-        start();
-    });
-
-
+//Object button at top of page. Changes the user selection and calls the start function.
 var object = document.querySelector('.object');
 object.addEventListener('click',
     function () {
@@ -242,7 +238,7 @@ object.addEventListener('click',
         start();
     });
 
-
+//Image button at top of page. Changes the user selection and calls the start function.
 var images = document.querySelector('.images');
 images.addEventListener('click',
     function () {
@@ -250,17 +246,17 @@ images.addEventListener('click',
         start();
     });
 
+
+//Favorite button at top of page. It searches through local storage for all favorited items then calls the generate function.
 var favorites = document.querySelector('.favorites')
 favorites.addEventListener('click',
     function () {
         var container = document.querySelector('.grid-x')
         container.innerHTML = "";
         let count = JSON.parse(localStorage.getItem('count'));
-        console.log(count);
         for (let index = 1; index <= count; index++) {
             var fav = `fav${index}`;
             var info = JSON.parse(localStorage.getItem(fav));
-            console.log(index);
 
             if (info) {
                 if (info.artistName) {
